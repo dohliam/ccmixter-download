@@ -1,7 +1,20 @@
 #!/usr/bin/ruby
 
-require 'open-uri'
 require 'fileutils'
+require 'open-uri'
+require 'optparse'
+
+options = {}
+OptionParser.new do |opts|
+  opts.banner = "\n  ==ccmixter-download-artist - a tool for batch downloading songs from ccMixter==\n  Usage: ccmixter_download_artist.rb [ARTIST] [OPTIONS]"
+
+  opts.on("-d", "--download", "Download all tracks") { options[:download] = true }
+  opts.on("-f", "--save-to-file", "Save urls to tracklist file") { options[:save] = true }
+  opts.on("-p", "--print", "Print tracklist") { options[:print] = true }
+  opts.on("-r", "--raw", "Output raw track array values (debugging)") { options[:raw] = true }
+  opts.on("-s", "--stream", "Stream entire playlist (requires mplayer)") { options[:stream] = true }
+
+end.parse!
 
 def get_mp3_list(artist)
   url = "http://ccmixter.org/people/#{artist}/uploads"
@@ -97,49 +110,25 @@ def raw_tracklist(artist)
   end
 end
 
-def help_text
-  puts
-  puts "  ==ccmixter-download-artist - a tool for batch downloading songs from ccmixter=="
-  puts "  Usage: ccmixter_download_artist.rb [ARTIST] [OPTIONS]"
-  puts
-  puts "  Options:"
-  puts "  -d\tdownload all tracks"
-  puts "  -f\tsave urls to tracklist"
-  puts "  -h\tshow this help"
-  puts "  -p\tprint tracklist"
-  puts "  -s\tstream entire playlist (requires mplayer)"
-  puts "  -x\toutput raw track array values (debugging)"
-  puts
-end
+artist = ""
 
 if ARGV[0]
-  if ARGV[0] == "-h"
-    help_text
-    exit
-  end
+  artist = ARGV[0]
 else
   puts "  ** No argument specified. Please use the -h option for help"
   exit
 end
 
-artist = ARGV[0]
-
-if ARGV[1]
-  if ARGV[1] == "-d"
+if options[:download]
     download_all_tracks(artist)
-  elsif ARGV[1] == "-f"
+elsif options[:save]
     save_tracklist(artist)
-  elsif ARGV[1] == "-h"
-    help_text
-  elsif ARGV[1] == "-p"
+elsif options[:print]
     print_tracklist(artist)
-  elsif ARGV[1] == "-s"
+elsif options[:stream]
     stream_playlist(artist)
-  elsif ARGV[1] == "-x"
+elsif options[:raw]
     raw_tracklist(artist)
-  else
-    puts "  ** Bad argument specified"
-  end
 else
   mp3 = get_mp3_list(artist)
   puts mp3

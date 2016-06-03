@@ -4,15 +4,15 @@ There is a lot of great open-licensed music on [ccMixter](http://ccmixter.org/),
 
 ## Usage
 
-    ccmixter_download_artist.rb [ARTIST] [OPTIONS]
+    ccmixter_download_artist.rb [OPTIONS] [ARTIST]
 
 ## Options
-* `-d`: _download all tracks_
-* `-f`: _save urls to tracklist_
-* `-h`: _show this help_
-* `-p`: _print tracklist_
-* `-s`: _stream entire playlist (requires mplayer)_
-* `-x`: _output raw track array values (debugging)_
+* `-d` (`--download`): _Download all tracks_
+* `-f` (`--save-to-file`): _Save urls to tracklist file_
+* `-h` (`--help`): _Show help_
+* `-p` (`--print`): _Print tracklist_
+* `-r` (`--raw`): _Output raw track array values (debugging)_
+* `-s` (`--stream`): _Stream entire playlist (requires mplayer)_
 
 ## License
 
