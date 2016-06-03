@@ -3,6 +3,7 @@
 require 'fileutils'
 require 'open-uri'
 require 'optparse'
+require 'nokogiri'
 
 options = {}
 OptionParser.new do |opts|
@@ -13,6 +14,7 @@ OptionParser.new do |opts|
   opts.on("-p", "--print", "Print tracklist") { options[:print] = true }
   opts.on("-r", "--raw", "Output raw track array values (debugging)") { options[:raw] = true }
   opts.on("-s", "--stream", "Stream entire playlist (requires mplayer)") { options[:stream] = true }
+  opts.on("-t", "--tag", "Specify tag instead of artist name") { options[:tag] = true }
 
 end.parse!
 
@@ -62,8 +64,15 @@ def get_mp3_list(artist)
   mp3
 end
 
-def download_all_tracks(artist)
-  mp3 = get_mp3_list(artist)
+def download_all_tracks(artist, source="mp3")
+  mp3 = []
+
+  if source == "tag"
+    mp3 = get_tag_list(artist)
+  else
+    mp3 = get_mp3_list(artist)
+  end
+
   download_count = 1
   puts "  ** Fetching remote mp3s..."
   mp3.uniq.each do |m|
@@ -77,8 +86,15 @@ def download_all_tracks(artist)
   puts "  ** All files saved to download folder!"
 end
 
-def tracklist_to_file(artist, filename)
-  mp3 = get_mp3_list(artist)
+def tracklist_to_file(artist, filename, source="mp3")
+  mp3 = []
+
+  if source == "tag"
+    mp3 = get_tag_list(artist)
+  else
+    mp3 = get_mp3_list(artist)
+  end
+
   mp3.uniq.each do |m|
     File.open(filename, "w") { |f| f << mp3.join("\n") }
   end
@@ -90,24 +106,61 @@ def save_tracklist(artist)
   puts "  ** Tracklist saved to #{filename}!"
 end
 
-def stream_playlist(artist)
+def stream_playlist(artist, source="mp3")
   filename = "/tmp/ccmixter_#{artist}.tmp"
-  tracklist_to_file(artist, filename)
+
+  if source == "tag"
+    tracklist_to_file(artist, filename, "tag")
+  else
+    tracklist_to_file(artist, filename)
+  end
+
   exec("mplayer -playlist #{filename}")
 end
 
-def print_tracklist(artist)
-  mp3 = get_mp3_list(artist)
+def print_tracklist(artist, source="mp3")
+  mp3 = []
+
+  if source == "tag"
+    mp3 = get_tag_list(artist)
+  else
+    mp3 = get_mp3_list(artist)
+  end
+
   mp3.uniq.each do |m|
     puts m
   end
 end
 
-def raw_tracklist(artist)
-  mp3 = get_mp3_list(artist)
+def raw_tracklist(artist, source="mp3")
+  mp3 = []
+
+  if source == "tag"
+    mp3 = get_tag_list(artist)
+  else
+    mp3 = get_mp3_list(artist)
+  end
+
   mp3.uniq.each do |m|
     p m
   end
+end
+
+def get_tag_list(tag)
+  url = "http://dig.ccmixter.org/dig?tags=#{tag}"
+
+  content = open(url).read
+
+  track_info = content.scan(/<span class="song-title"><a id=".*?">([^<]+)<\/a><\/span> <span class="artist-name light-color"><a href="\/people\/(.*?)">/)
+
+  mp3 = []
+  track_info.each do |t|
+    title, artist_name = t
+    title_unescape = Nokogiri::XML.fragment(title).text
+    title_format = title_unescape.gsub(/[\s\!'\]\?]/, "_").gsub(/>$/, "_").gsub(/[>\[,&]/, "").gsub(/_+/, "_")
+    mp3.push("http://ccmixter.org/content/#{artist_name}/#{artist_name}_-_#{title_format}.mp3")
+  end
+  mp3
 end
 
 artist = ""
@@ -120,15 +173,37 @@ else
 end
 
 if options[:download]
+  if options[:tag]
+    download_all_tracks(artist, "tag")
+  else
     download_all_tracks(artist)
+  end
 elsif options[:save]
+  if options[:tag]
+    save_tracklist(artist, "tag")
+  else
     save_tracklist(artist)
+  end
 elsif options[:print]
+  if options[:tag]
+    print_tracklist(artist, "tag")
+  else
     print_tracklist(artist)
+  end
 elsif options[:stream]
+  if options[:tag]
+    stream_playlist(artist, "tag")
+  else
     stream_playlist(artist)
+  end
+elsif options[:tag]
+    get_tag_list(artist)
 elsif options[:raw]
+  if options[:tag]
+    raw_tracklist(artist, "tag")
+  else
     raw_tracklist(artist)
+  end
 else
   mp3 = get_mp3_list(artist)
   puts mp3
