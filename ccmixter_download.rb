@@ -64,10 +64,10 @@ def get_mp3_list(artist)
   mp3
 end
 
-def download_all_tracks(artist, source="mp3")
+def download_all_tracks(artist)
   mp3 = []
 
-  if source == "tag"
+  if @tag
     mp3 = get_tag_list(artist)
   else
     mp3 = get_mp3_list(artist)
@@ -86,10 +86,10 @@ def download_all_tracks(artist, source="mp3")
   puts "  ** All files saved to download folder!"
 end
 
-def tracklist_to_file(artist, filename, source="mp3")
+def tracklist_to_file(artist, filename)
   mp3 = []
 
-  if source == "tag"
+  if @tag
     mp3 = get_tag_list(artist)
   else
     mp3 = get_mp3_list(artist)
@@ -106,22 +106,18 @@ def save_tracklist(artist)
   puts "  ** Tracklist saved to #{filename}!"
 end
 
-def stream_playlist(artist, source="mp3")
+def stream_playlist(artist)
   filename = "/tmp/ccmixter_#{artist}.tmp"
 
-  if source == "tag"
-    tracklist_to_file(artist, filename, "tag")
-  else
-    tracklist_to_file(artist, filename)
-  end
+  tracklist_to_file(artist, filename)
 
   exec("mplayer -playlist #{filename}")
 end
 
-def print_tracklist(artist, source="mp3")
+def print_tracklist(artist)
   mp3 = []
 
-  if source == "tag"
+  if @tag
     mp3 = get_tag_list(artist)
   else
     mp3 = get_mp3_list(artist)
@@ -132,10 +128,10 @@ def print_tracklist(artist, source="mp3")
   end
 end
 
-def raw_tracklist(artist, source="mp3")
+def raw_tracklist(artist)
   mp3 = []
 
-  if source == "tag"
+  if @tag
     mp3 = get_tag_list(artist)
   else
     mp3 = get_mp3_list(artist)
@@ -172,38 +168,22 @@ else
   exit
 end
 
+if options[:tag]
+  @tag = true
+end
+
 if options[:download]
-  if options[:tag]
-    download_all_tracks(artist, "tag")
-  else
-    download_all_tracks(artist)
-  end
+  download_all_tracks(artist)
 elsif options[:save]
-  if options[:tag]
-    save_tracklist(artist, "tag")
-  else
-    save_tracklist(artist)
-  end
+  save_tracklist(artist)
 elsif options[:print]
-  if options[:tag]
-    print_tracklist(artist, "tag")
-  else
-    print_tracklist(artist)
-  end
+  print_tracklist(artist)
 elsif options[:stream]
-  if options[:tag]
-    stream_playlist(artist, "tag")
-  else
-    stream_playlist(artist)
-  end
+  stream_playlist(artist)
 elsif options[:tag]
     get_tag_list(artist)
 elsif options[:raw]
-  if options[:tag]
-    raw_tracklist(artist, "tag")
-  else
-    raw_tracklist(artist)
-  end
+  raw_tracklist(artist)
 else
   mp3 = get_mp3_list(artist)
   puts mp3
