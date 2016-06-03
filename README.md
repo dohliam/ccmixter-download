@@ -1,10 +1,10 @@
-# ccmixter-download-artist - A tool for batch downloading songs from ccmixter
+# ccmixter-download - A tool for batch downloading and streaming songs from ccMixter
 
 There is a lot of great open-licensed music on [ccMixter](http://ccmixter.org/), but it isn't very easy to download all tracks uploaded by a particular artist. This script allows you to download songs and stream entire playlists by specifying the artist name.
 
 ## Usage
 
-    ccmixter_download_artist.rb [OPTIONS] [ARTIST]
+    ccmixter_download.rb [OPTIONS] [ARTIST]
 
 ## Options
 * `-d` (`--download`): _Download all tracks_
@@ -17,11 +17,11 @@ There is a lot of great open-licensed music on [ccMixter](http://ccmixter.org/),
 
 The `-t` option to use tags can be used together with `-d`, `-f`, `p`, `-r`, and `-s` to download, save, print, output raw values or stream music based on a specific tag. For example, to stream a list of tracks tagged as "ambient", you could use:
 
-    ccmixter_download_artist.rb -ts ambient
+    ccmixter_download.rb -ts ambient
 
 To download the tracks instead, use:
 
-    ccmixter_download_artist.rb -td ambient
+    ccmixter_download.rb -td ambient
 
 ## License
 

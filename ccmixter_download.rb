@@ -7,7 +7,7 @@ require 'nokogiri'
 
 options = {}
 OptionParser.new do |opts|
-  opts.banner = "\n  ==ccmixter-download-artist - a tool for batch downloading songs from ccMixter==\n  Usage: ccmixter_download_artist.rb [ARTIST] [OPTIONS]"
+  opts.banner = "\n  ==ccmixter-download - a tool for batch downloading and streaming songs from ccMixter==\n  Usage: ccmixter_download_artist.rb [ARTIST] [OPTIONS]"
 
   opts.on("-d", "--download", "Download all tracks") { options[:download] = true }
   opts.on("-f", "--save-to-file", "Save urls to tracklist file") { options[:save] = true }
