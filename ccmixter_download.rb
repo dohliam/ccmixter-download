@@ -11,6 +11,7 @@ OptionParser.new do |opts|
 
   opts.on("-d", "--download", "Download all tracks") { options[:download] = true }
   opts.on("-f", "--save-to-file", "Save urls to tracklist file") { options[:save] = true }
+  opts.on("-l", "--limit NUMBER", "Specify results limit for tags (default 40)") { |v| options[:limit] = v }
   opts.on("-p", "--print", "Print tracklist") { options[:print] = true }
   opts.on("-r", "--raw", "Output raw track array values (debugging)") { options[:raw] = true }
   opts.on("-s", "--stream", "Stream entire playlist (requires mplayer)") { options[:stream] = true }
@@ -145,6 +146,10 @@ end
 def get_tag_list(tag)
   url = "http://dig.ccmixter.org/dig?tags=#{tag}"
 
+  if @limit
+    url = "http://dig.ccmixter.org/dig?limit=#{@limit}&tags=#{tag}"
+  end
+
   content = open(url).read
 
   track_info = content.scan(/<span class="song-title"><a id=".*?">([^<]+)<\/a><\/span> <span class="artist-name light-color"><a href="\/people\/(.*?)">/)
@@ -170,6 +175,10 @@ end
 
 if options[:tag]
   @tag = true
+end
+
+if options[:limit]
+  @limit = options[:limit]
 end
 
 if options[:download]

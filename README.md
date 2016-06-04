@@ -10,6 +10,7 @@ There is a lot of great open-licensed music on [ccMixter](http://ccmixter.org/),
 * `-d` (`--download`): _Download all tracks_
 * `-f` (`--save-to-file`): _Save urls to tracklist file_
 * `-h` (`--help`): _Show help_
+* `-l` (`--limit NUMBER`): _Specify results limit for tags (default 40)_
 * `-p` (`--print`): _Print tracklist_
 * `-r` (`--raw`): _Output raw track array values (debugging)_
 * `-s` (`--stream`): _Stream entire playlist (requires mplayer)_
