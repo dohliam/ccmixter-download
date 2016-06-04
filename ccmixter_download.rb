@@ -11,7 +11,7 @@ OptionParser.new do |opts|
 
   opts.on("-d", "--download", "Download all tracks") { options[:download] = true }
   opts.on("-f", "--save-to-file", "Save urls to tracklist file") { options[:save] = true }
-  opts.on("-l", "--limit NUMBER", "Specify results limit for tags (default 40)") { |v| options[:limit] = v }
+  opts.on("-l", "--limit NUMBER", "Specify results limit for tags (default 200)") { |v| options[:limit] = v }
   opts.on("-p", "--print", "Print tracklist") { options[:print] = true }
   opts.on("-r", "--raw", "Output raw track array values (debugging)") { options[:raw] = true }
   opts.on("-s", "--stream", "Stream entire playlist (requires mplayer)") { options[:stream] = true }
@@ -20,48 +20,13 @@ OptionParser.new do |opts|
 end.parse!
 
 def get_mp3_list(artist)
-  url = "http://ccmixter.org/people/#{artist}/uploads"
+  url = "http://ccmixter.org/api/query?f=html&t=links_by_dl_ul&u=#{artist}"
 
   content = open(url).read
 
-  titles = content.scan(/class="cc_file_link upload_name">(.*)<\/a>/)
-  mp3 = content.scan(/href = '(http:\/\/ccmixter.org\/content\/#{artist}\/.*\.mp3)/)
+  titles = content.scan(/class="cc_file_link">(.*)<\/a>/)
+  mp3 = content.scan(/<a href="(http:\/\/ccmixter.org\/content\/#{artist}\/.*?)">/)
 
-  total_tracks = content.scan(/<span class="page_viewing">Viewing \d+ through \d+ of (\d+)<\/span>/)
-
-  total_tracks_int = total_tracks[0][0].to_i
-
-  mod = total_tracks_int % 15
-  last_page_int = total_tracks_int - mod
-
-  total_upload_pages = 0
-
-  if mod == 0
-    total_upload_pages = total_tracks_int / 15
-  else
-    total_upload_pages = total_tracks_int / 15 + 1
-  end
-
-  puts "  ** Getting #{mp3.length.to_s} tracks..."
-
-  if total_upload_pages == 1
-    puts "  ** Done - List of all files:"
-  elsif total_upload_pages == 0
-    puts "  ** Something went wrong."
-  else
-    counter = 2
-    while counter < total_upload_pages + 1
-      offset = (counter - 1) * 15
-      page_url = "http://ccmixter.org/people/#{artist}/uploads?offset=#{offset.to_s}"
-      page_content = open(page_url).read
-      list = page_content.scan(/href = '(http:\/\/ccmixter.org\/content\/#{artist}\/.*\.mp3)/)
-      list.each { |l| mp3.push(l) }
-      puts "  ** Getting #{mp3.length.to_s} track listings..."
-
-      counter += 1
-    end
-    puts "  ** Got #{mp3.length.to_s} track listings in total"
-  end
   mp3
 end
 
@@ -144,23 +109,16 @@ def raw_tracklist(artist)
 end
 
 def get_tag_list(tag)
-  url = "http://dig.ccmixter.org/dig?tags=#{tag}"
+  url = "http://ccmixter.org/api/query?tags=#{tag}&f=html&t=links_by_dl_ul"
 
   if @limit
-    url = "http://dig.ccmixter.org/dig?limit=#{@limit}&tags=#{tag}"
+    url = "http://ccmixter.org/api/query?tags=#{tag}&f=html&t=links_by_dl_ul&limit=#{@limit}"
   end
 
   content = open(url).read
 
-  track_info = content.scan(/<span class="song-title"><a id=".*?">([^<]+)<\/a><\/span> <span class="artist-name light-color"><a href="\/people\/(.*?)">/)
+  mp3 = content.scan(/<a href="(http:\/\/ccmixter.org\/content\/.*?)">/)
 
-  mp3 = []
-  track_info.each do |t|
-    title, artist_name = t
-    title_unescape = Nokogiri::XML.fragment(title).text
-    title_format = title_unescape.gsub(/[\s\!'\]\?]/, "_").gsub(/>$/, "_").gsub(/[>\[,&]/, "").gsub(/_+/, "_")
-    mp3.push("http://ccmixter.org/content/#{artist_name}/#{artist_name}_-_#{title_format}.mp3")
-  end
   mp3
 end
 
