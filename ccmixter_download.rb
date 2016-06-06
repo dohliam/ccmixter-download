@@ -3,7 +3,6 @@
 require 'fileutils'
 require 'open-uri'
 require 'optparse'
-require 'nokogiri'
 
 options = {}
 OptionParser.new do |opts|
