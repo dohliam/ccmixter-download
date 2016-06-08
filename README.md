@@ -1,6 +1,6 @@
 # ccmixter-download - A tool for batch downloading and streaming songs from ccMixter
 
-There is a lot of great open-licensed music on [ccMixter](http://ccmixter.org/), but it isn't very easy to download all tracks uploaded by a particular artist. This script allows you to download songs and stream entire playlists by specifying the artist name.
+There is a lot of great open-licensed music on [ccMixter](http://ccmixter.org/), but it isn't very easy to download all tracks uploaded by a particular artist or with a particular tag. This script allows you to download songs and stream entire playlists by specifying the artist or tag name.
 
 ## Usage
 
@@ -11,6 +11,7 @@ There is a lot of great open-licensed music on [ccMixter](http://ccmixter.org/),
 * `-f` (`--save-to-file`): _Save urls to tracklist file_
 * `-h` (`--help`): _Show help_
 * `-l` (`--limit NUMBER`): _Specify results limit for tags (default 200)_
+* `-m` (`--markdown`): _Print out playlist in markdown format with links_
 * `-p` (`--print`): _Print tracklist_
 * `-r` (`--raw`): _Output raw track array values (debugging)_
 * `-s` (`--stream`): _Stream entire playlist (requires mplayer)_

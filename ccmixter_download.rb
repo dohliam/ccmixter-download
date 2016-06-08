@@ -11,6 +11,7 @@ OptionParser.new do |opts|
   opts.on("-d", "--download", "Download all tracks") { options[:download] = true }
   opts.on("-f", "--save-to-file", "Save urls to tracklist file") { options[:save] = true }
   opts.on("-l", "--limit NUMBER", "Specify results limit for tags (default 200)") { |v| options[:limit] = v }
+  opts.on("-m", "--markdown", "Print out playlist in markdown format with links") { options[:markdown] = true }
   opts.on("-p", "--print", "Print tracklist") { options[:print] = true }
   opts.on("-r", "--raw", "Output raw track array values (debugging)") { options[:raw] = true }
   opts.on("-s", "--stream", "Stream entire playlist (requires mplayer)") { options[:stream] = true }
@@ -121,6 +122,33 @@ def get_tag_list(tag)
   mp3
 end
 
+def print_markdown(artist)
+  url = "http://ccmixter.org/api/query?f=html&t=links_by_dl_ul&u=#{artist}"
+
+  if @tag
+    url = "http://ccmixter.org/api/query?tags=#{artist}&f=html&t=links_by_dl_ul"
+  end
+
+  if @limit
+    url = "http://ccmixter.org/api/query?tags=#{artist}&f=html&t=links_by_dl_ul&limit=#{@limit}"
+  end
+
+  content = open(url).read
+
+  info = content.scan(/^\s+<li>\n\s+<a href="(http:\/\/ccmixter.org\/files\/.*?\/.*?)" class="cc_file_link">(.*?)<\/a>by     <a href="(http:\/\/ccmixter.org\/people\/.*?)">(.*?)<\/a>\n\s+<a href="(http:\/\/ccmixter.org\/content\/.*?)">(.*?)<\/a>\n\s+<\/li>/)
+
+  info.each do |i|
+    ccmixter_link = i[0]
+    title = i[1]
+    artist_link = i[2]
+    artist_name = i[3]
+    file_download_link = i[4]
+    file_type = i[5]
+
+    puts "* _[#{title}](#{ccmixter_link})_: **[#{artist_name}](#{artist_link})** ([#{file_type}](#{file_download_link}))\n"
+  end
+end
+
 artist = ""
 
 if ARGV[0]
@@ -144,6 +172,8 @@ elsif options[:save]
   save_tracklist(artist)
 elsif options[:print]
   print_tracklist(artist)
+elsif options[:markdown]
+  print_markdown(artist)
 elsif options[:stream]
   stream_playlist(artist)
 elsif options[:tag]
