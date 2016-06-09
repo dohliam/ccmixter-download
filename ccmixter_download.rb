@@ -176,11 +176,8 @@ elsif options[:markdown]
   print_markdown(artist)
 elsif options[:stream]
   stream_playlist(artist)
-elsif options[:tag]
-    get_tag_list(artist)
 elsif options[:raw]
   raw_tracklist(artist)
 else
-  mp3 = get_mp3_list(artist)
-  puts mp3
+  puts @tag ? get_tag_list(artist) : get_mp3_list(artist)
 end
