@@ -176,7 +176,7 @@ end
 term = ""
 
 if ARGV[0]
-  term = ARGV[0]
+  term = URI.encode(ARGV[0])
 else
   puts "  ** No argument specified. Please use the -h option for help"
   exit
