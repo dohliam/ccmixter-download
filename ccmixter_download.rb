@@ -13,6 +13,7 @@ OptionParser.new do |opts|
   opts.on("-l", "--limit NUMBER", "Specify results limit (default 200)") { |v| options[:limit] = v }
   opts.on("-m", "--markdown", "Print out playlist in markdown format with links") { options[:markdown] = true }
   opts.on("-p", "--print", "Print tracklist") { options[:print] = true }
+  opts.on("-q", "--query", "Search for a keyword") { options[:search] = true }
   opts.on("-r", "--raw", "Output raw track array values (debugging)") { options[:raw] = true }
   opts.on("-s", "--stream", "Stream entire playlist (requires mplayer)") { options[:stream] = true }
   opts.on("-t", "--tag", "Specify tag instead of artist name") { options[:tag] = true }
@@ -34,35 +35,37 @@ def get_mp3_list(artist)
   mp3
 end
 
-def download_all_tracks(artist)
+def download_all_tracks(term)
   mp3 = []
 
   if @tag
-    mp3 = get_tag_list(artist)
+    mp3 = get_tag_list(term)
   else
-    mp3 = get_mp3_list(artist)
+    mp3 = get_mp3_list(term)
   end
 
   download_count = 1
   puts "  ** Fetching remote mp3s..."
   mp3.uniq.each do |m|
     filename = m[0].gsub(/.*\//, "")
-    FileUtils.mkdir_p artist
+    FileUtils.mkdir_p term
     progress = download_count.to_f / mp3.uniq.length.to_f * 100
-    File.write(artist + "/" + filename, open(m[0]).read, {mode: 'wb'})
-    puts "  ##{download_count.to_s} of #{mp3.uniq.length.to_s}: #{filename} saved to #{artist} directory! (#{progress.round(2).to_s}%)"
+    File.write(term + "/" + filename, open(m[0]).read, {mode: 'wb'})
+    puts "  ##{download_count.to_s} of #{mp3.uniq.length.to_s}: #{filename} saved to #{term} directory! (#{progress.round(2).to_s}%)"
     download_count += 1
   end
   puts "  ** All files saved to download folder!"
 end
 
-def tracklist_to_file(artist, filename)
+def tracklist_to_file(term, filename)
   mp3 = []
 
   if @tag
-    mp3 = get_tag_list(artist)
+    mp3 = get_tag_list(term)
+  elsif @search
+    mp3 = get_search_list(term)
   else
-    mp3 = get_mp3_list(artist)
+    mp3 = get_mp3_list(term)
   end
 
   mp3.uniq.each do |m|
@@ -70,27 +73,27 @@ def tracklist_to_file(artist, filename)
   end
 end
 
-def save_tracklist(artist)
-  filename = "tracklist_#{artist}_ccmixter.txt"
-  tracklist_to_file(artist, filename)
+def save_tracklist(term)
+  filename = "tracklist_#{term}_ccmixter.txt"
+  tracklist_to_file(term, filename)
   puts "  ** Tracklist saved to #{filename}!"
 end
 
-def stream_playlist(artist)
-  filename = "/tmp/ccmixter_#{artist}.tmp"
+def stream_playlist(term)
+  filename = "/tmp/ccmixter_#{term}.tmp"
 
-  tracklist_to_file(artist, filename)
+  tracklist_to_file(term, filename)
 
   exec("mplayer -playlist #{filename}")
 end
 
-def print_tracklist(artist)
+def print_tracklist(term)
   mp3 = []
 
   if @tag
-    mp3 = get_tag_list(artist)
+    mp3 = get_tag_list(term)
   else
-    mp3 = get_mp3_list(artist)
+    mp3 = get_mp3_list(term)
   end
 
   mp3.uniq.each do |m|
@@ -98,13 +101,13 @@ def print_tracklist(artist)
   end
 end
 
-def raw_tracklist(artist)
+def raw_tracklist(term)
   mp3 = []
 
   if @tag
-    mp3 = get_tag_list(artist)
+    mp3 = get_tag_list(term)
   else
-    mp3 = get_mp3_list(artist)
+    mp3 = get_mp3_list(term)
   end
 
   mp3.uniq.each do |m|
@@ -126,16 +129,18 @@ def get_tag_list(tag)
   mp3
 end
 
-def print_markdown(artist)
+def print_markdown(term)
   limit = ""
   if @limit
     limit = "&limit=#{@limit}"
   end
 
-  url = "http://ccmixter.org/api/query?f=html&t=links_by_dl_ul&u=#{artist}" + limit
+  url = "http://ccmixter.org/api/query?f=html&t=links_by_dl_ul&u=#{term}" + limit
 
   if @tag
-    url = "http://ccmixter.org/api/query?tags=#{artist}&f=html&t=links_by_dl_ul" + limit
+    url = "http://ccmixter.org/api/query?tags=#{term}&f=html&t=links_by_dl_ul" + limit
+  elsif @search
+    url = "http://ccmixter.org/api/query?search=#{term}&f=html&t=links_by_dl_ul" + limit
   end
 
   content = open(url).read
@@ -154,10 +159,24 @@ def print_markdown(artist)
   end
 end
 
-artist = ""
+def get_search_list(keyword)
+  url = "http://ccmixter.org/api/query?search=#{keyword}&f=html&t=links_by_dl_ul"
+
+  if @limit
+    url = "http://ccmixter.org/api/query?search=#{keyword}&f=html&t=links_by_dl_ul&limit=#{@limit}"
+  end
+
+  content = open(url).read
+
+  mp3 = content.scan(/<a href="(http:\/\/ccmixter.org\/content\/.*?)">/)
+
+  mp3
+end
+
+term = ""
 
 if ARGV[0]
-  artist = ARGV[0]
+  term = ARGV[0]
 else
   puts "  ** No argument specified. Please use the -h option for help"
   exit
@@ -171,18 +190,24 @@ if options[:limit]
   @limit = options[:limit]
 end
 
+if options[:search]
+  @search = true
+end
+
 if options[:download]
-  download_all_tracks(artist)
+  download_all_tracks(term)
 elsif options[:save]
-  save_tracklist(artist)
+  save_tracklist(term)
 elsif options[:print]
-  print_tracklist(artist)
+  print_tracklist(term)
 elsif options[:markdown]
-  print_markdown(artist)
+  print_markdown(term)
 elsif options[:stream]
-  stream_playlist(artist)
+  stream_playlist(term)
 elsif options[:raw]
-  raw_tracklist(artist)
+  raw_tracklist(term)
+elsif options[:search]
+  puts get_search_list(term)
 else
-  puts @tag ? get_tag_list(artist) : get_mp3_list(artist)
+  puts @tag ? get_tag_list(term) : get_mp3_list(term)
 end
