@@ -10,7 +10,7 @@ OptionParser.new do |opts|
 
   opts.on("-d", "--download", "Download all tracks") { options[:download] = true }
   opts.on("-f", "--save-to-file", "Save urls to tracklist file") { options[:save] = true }
-  opts.on("-l", "--limit NUMBER", "Specify results limit for tags (default 200)") { |v| options[:limit] = v }
+  opts.on("-l", "--limit NUMBER", "Specify results limit (default 200)") { |v| options[:limit] = v }
   opts.on("-m", "--markdown", "Print out playlist in markdown format with links") { options[:markdown] = true }
   opts.on("-p", "--print", "Print tracklist") { options[:print] = true }
   opts.on("-r", "--raw", "Output raw track array values (debugging)") { options[:raw] = true }
@@ -21,6 +21,10 @@ end.parse!
 
 def get_mp3_list(artist)
   url = "http://ccmixter.org/api/query?f=html&t=links_by_dl_ul&u=#{artist}"
+
+  if @limit
+    url = "http://ccmixter.org/api/query?f=html&t=links_by_dl_ul&u=#{artist}&limit=#{@limit}"
+  end
 
   content = open(url).read
 
@@ -123,14 +127,15 @@ def get_tag_list(tag)
 end
 
 def print_markdown(artist)
-  url = "http://ccmixter.org/api/query?f=html&t=links_by_dl_ul&u=#{artist}"
-
-  if @tag
-    url = "http://ccmixter.org/api/query?tags=#{artist}&f=html&t=links_by_dl_ul"
+  limit = ""
+  if @limit
+    limit = "&limit=#{@limit}"
   end
 
-  if @limit
-    url = "http://ccmixter.org/api/query?tags=#{artist}&f=html&t=links_by_dl_ul&limit=#{@limit}"
+  url = "http://ccmixter.org/api/query?f=html&t=links_by_dl_ul&u=#{artist}" + limit
+
+  if @tag
+    url = "http://ccmixter.org/api/query?tags=#{artist}&f=html&t=links_by_dl_ul" + limit
   end
 
   content = open(url).read
