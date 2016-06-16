@@ -4,7 +4,7 @@ There is a lot of great open-licensed music on [ccMixter](http://ccmixter.org/),
 
 ## Usage
 
-    ccmixter_download.rb [OPTIONS] [ARTIST]
+    ccmixter_download.rb [OPTIONS]
 
 You might want to rename the script to `ccm` and place it in your PATH. This will allow you to do for example:
 

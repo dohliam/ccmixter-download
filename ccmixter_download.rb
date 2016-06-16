@@ -6,7 +6,7 @@ require 'optparse'
 
 options = {}
 OptionParser.new do |opts|
-  opts.banner = "\n  ==ccmixter-download - a tool for batch downloading and streaming songs from ccMixter==\n  Usage: ccmixter_download_artist.rb [ARTIST] [OPTIONS]"
+  opts.banner = "\n  ==ccmixter-download - a tool for batch downloading and streaming songs from ccMixter==\n  Usage: ccmixter_download_artist.rb [OPTIONS]"
 
   opts.on("-c", "--license LICENSE", "Filter tracks by license") { |v| options[:license] = v }
   opts.on("-d", "--download", "Download all tracks") { options[:download] = true }
