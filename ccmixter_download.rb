@@ -30,7 +30,7 @@ end
 
 def get_track_list(params)
   content = get_url_content(params)
-  content.scan(/<a href="(http:\/\/ccmixter.org\/content\/.*?)">/)
+  content.scan(/<a href="(http:\/\/ccmixter.org\/(?:content|contests)\/.*?)">/)
 end
 
 def download_all_tracks(params, descriptor)
