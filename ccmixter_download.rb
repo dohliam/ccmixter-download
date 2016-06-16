@@ -90,7 +90,7 @@ end
 def get_track_info(params)
   content = get_url_content(params)
 
-  content.scan(/^\s+<li>\n\s+<a href="(http:\/\/ccmixter.org\/files\/.*?\/.*?)" class="cc_file_link">(.*?)<\/a>by     <a href="(http:\/\/ccmixter.org\/people\/.*?)">(.*?)<\/a>\n\s+<a href="(http:\/\/ccmixter.org\/content\/.*?)">(.*?)<\/a>\n\s+<\/li>/)
+  content.scan(/^\s+<li>\n\s+<a href="(http:\/\/ccmixter.org\/files\/.*?\/.*?)" class="cc_file_link">(.*?)<\/a>by     <a href="(http:\/\/ccmixter.org\/people\/.*?)">(.*?)<\/a>\n\s+<a href="(http:\/\/ccmixter.org\/(?:content|contests)\/.*?)">(.*?)<\/a>\n\s+<\/li>/)
 end
 
 def print_markdown(params)
