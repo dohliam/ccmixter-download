@@ -89,16 +89,16 @@ The possibe license values are:
 
 Value | License name
 ----- | ------------
-`by` | Attribution (CC BY)
-`nc` | NonCommercial (CC BY-NC)
-`sa` | ShareAlike (CC BY-SA)
-`nod` | NoDerivs (CC BY-ND)
-`byncsa` | NonCommercial ShareAlike (CC BY-NC-SA)
-`byncnd` | Attribution-NonCommercial-NoDerivs (CC BY-NC-ND)
-`s` | Sampling
-`splus` | Sampling+
-`ncsplus` | NonCommercial Sampling+
-`pd` | Public Domain (CC 0)
+`by` | [Attribution](http://creativecommons.org/licenses/by/4.0/) (CC BY)
+`nc` | [NonCommercial](http://creativecommons.org/licenses/by-nc/4.0/) (CC BY-NC)
+`sa` | [ShareAlike](http://creativecommons.org/licenses/by-sa/4.0/) (CC BY-SA)
+`nod` | [NoDerivs](http://creativecommons.org/licenses/by-nd/4.0/) (CC BY-ND)
+`byncsa` | [NonCommercial ShareAlike](http://creativecommons.org/licenses/by-nc-sa/4.0/) (CC BY-NC-SA)
+`byncnd` | [Attribution-NonCommercial-NoDerivs](http://creativecommons.org/licenses/by-nc-nd/4.0/) (CC BY-NC-ND)
+`s` | [Sampling](http://creativecommons.org/licenses/sampling/1.0/)
+`splus` | [Sampling+](http://creativecommons.org/licenses/sampling+/1.0/)
+`ncsplus` | [NonCommercial Sampling+](http://creativecommons.org/licenses/nc-sampling+/1.0/) (NC Sampling+)
+`pd` | [Public Domain](https://creativecommons.org/publicdomain/zero/1.0/) (CC 0)
 
 ### Output format
 
