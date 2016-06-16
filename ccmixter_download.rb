@@ -24,7 +24,7 @@ OptionParser.new do |opts|
 end.parse!
 
 def get_url_content(params)
-  url = "http://ccmixter.org/api/query?f=html&t=links_by_dl_ul" + params
+  url = "http://ccmixter.org/api/query?f=html&t=links_by_dl_ul&chop=0" + params
   open(URI.encode(url)).read
 end
 
