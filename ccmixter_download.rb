@@ -162,7 +162,12 @@ basename = descriptor + "_ccmixter_tracklist"
 params = user + tag + search + license + limit + sort
 
 if params == ""
-  puts "  ** No arguments specified. Please use the -h option for help."
+  if ARGV[0]
+    params = "&tags=" + ARGV[0]
+    puts get_track_list(params)
+  else
+    puts "  ** No arguments specified. Please use the -h option for help."
+  end
   exit
 end
 
