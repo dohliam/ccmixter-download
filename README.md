@@ -21,10 +21,12 @@ Options can be used individually or combined together to produce more fine grain
 * `-c`, (`--license LICENSE`): _Filter tracks by license_
 * `-d`, (`--download`): _Download all tracks_
 * `-f`, (`--save-to-file`): _Save urls to tracklist file_
+* `-i`, (`--id ID`): _Get results for track id (or url)_
 * `-l`, (`--limit NUMBER`): _Specify results limit (default 200)_
 * `-m`, (`--markdown`): _Print out playlist in markdown format with links_
 * `-p`, (`--print`): _Print tracklist_
 * `-q`, (`--query KEYWORD`): _Search for a keyword_
+* `-R`, (`--remixes ID`): _Get remixes of a given track by id number_
 * `-r`, (`--recommended`): _Sort by highest recommended uploads_
 * `-s`, (`--stream`): _Stream entire playlist (requires mplayer)_
 * `-t`, (`--tag TAG`): _Specify tag name_
@@ -76,6 +78,30 @@ The default number of results provided by the ccMixter API is 200. However, many
 Similarly, to get the first 300 tracks by Javolenus:
 
     ccm -l 300 -u Javolenus
+
+### Results based on track ID
+
+If you know the url or the id number of a particular track (the id is the number at the end of the canonical URL on the ccMixter.org site), you can retrieve information about the track or download it directly without having to visit the site.
+
+For example, you can download the track _Imperfect World-Jazz Ballad_ by `VJ_Memes` using the following command with the `-i` option:
+
+    ccm -di http://ccmixter.org/files/VJ_Memes/32009
+
+The following command using only the id number will have the same effect:
+
+    ccm -di 32009
+
+If you would just like to print out some markdown-formatted metadata for the track, you can use:
+
+    ccm -mi 32009
+
+Like the `-i` option, `-R` also takes the id number or url of a track as an argument, and returns a list of all the remixes of that track. For example:
+
+    ccm -R http://ccmixter.org/files/ANTIQCOOL/39459
+
+One practical use for `-R` is in conjunction with the `-s` option to stream all the remixes of a particular track. You can combine this with the `-r` option to play a list of remixes sorted in order of popularity:
+
+    ccm -rsR 39459
 
 ### Filter by license
 
