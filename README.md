@@ -138,7 +138,6 @@ For debugging purposes, the `-w` option outputs the track list in raw format (i.
 
 ## To do
 
-* Search for remixes of a specific track
 * Play random track
 * Specify date range
 
