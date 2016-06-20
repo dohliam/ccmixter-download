@@ -16,6 +16,7 @@ OptionParser.new do |opts|
   opts.on("-m", "--markdown", "Print out playlist in markdown format with links") { options[:markdown] = true }
   opts.on("-p", "--print", "Print tracklist") { options[:print] = true }
   opts.on("-q", "--query KEYWORD", "Search for a keyword") { |v| options[:search] = v }
+  opts.on("-R", "--remixes ID", "Get remixes of a given track by id number") { |v| options[:remixes] = v }
   opts.on("-r", "--recommended", "Sort by highest recommended uploads") { options[:recommended] = true }
   opts.on("-s", "--stream", "Stream entire playlist (requires mplayer)") { options[:stream] = true }
   opts.on("-t", "--tag TAG", "Specify tag name") { |v| options[:tag] = v }
@@ -166,6 +167,12 @@ if options[:id]
   id = get_id(options[:id])
   desc_arr[4] = id
   id = "&ids=" + id
+end
+
+if options[:remixes]
+  id = get_id(options[:remixes])
+  desc_arr[4] = "remixes_of_" + id
+  id = "&remixes=" + id
 end
 
 descriptor = get_descriptor(desc_arr)
