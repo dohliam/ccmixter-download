@@ -11,6 +11,7 @@ OptionParser.new do |opts|
   opts.on("-c", "--license LICENSE", "Filter tracks by license") { |v| options[:license] = v }
   opts.on("-d", "--download", "Download all tracks") { options[:download] = true }
   opts.on("-f", "--save-to-file", "Save urls to tracklist file") { options[:save] = true }
+  opts.on("-i", "--id ID", "Get results for track id (or url)") { |v| options[:id] = v }
   opts.on("-l", "--limit NUMBER", "Specify results limit (default 200)") { |v| options[:limit] = v }
   opts.on("-m", "--markdown", "Print out playlist in markdown format with links") { options[:markdown] = true }
   opts.on("-p", "--print", "Print tracklist") { options[:print] = true }
@@ -118,6 +119,10 @@ def get_descriptor(desc_array)
   desc
 end
 
+def get_id(url)
+  url.gsub(/.*\//, "")
+end
+
 params = ""
 user = ""
 tag = ""
@@ -125,6 +130,7 @@ search = ""
 license = ""
 limit = ""
 sort = ""
+id = ""
 desc_arr = ["", "", "", ""]
 
 if options[:limit]
@@ -156,10 +162,16 @@ if options[:license]
   desc_arr[3] = options[:license]
 end
 
+if options[:id]
+  id = get_id(options[:id])
+  desc_arr[4] = id
+  id = "&ids=" + id
+end
+
 descriptor = get_descriptor(desc_arr)
 basename = descriptor + "_ccmixter_tracklist"
 
-params = user + tag + search + license + limit + sort
+params = user + tag + search + license + limit + sort + id
 
 if params == ""
   if ARGV[0]
@@ -172,7 +184,7 @@ if params == ""
 end
 
 if options[:download]
-  download_all_tracks(params, basename)
+  download_all_tracks(params, descriptor)
 elsif options[:save]
   save_tracklist(params, basename)
 elsif options[:print]
