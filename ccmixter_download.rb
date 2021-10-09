@@ -27,7 +27,7 @@ end.parse!
 
 def get_url_content(params)
   url = "http://ccmixter.org/api/query?f=html&t=links_by_dl_ul&chop=0" + params
-  open(URI.encode(url)).read
+  URI.open(escape_url(url)).read
 end
 
 def get_track_list(params)
@@ -44,7 +44,7 @@ def download_all_tracks(params, descriptor)
     filename = m[0].gsub(/.*\//, "")
     FileUtils.mkdir_p descriptor
     progress = download_count.to_f / mp3.uniq.length.to_f * 100
-    File.write(descriptor + "/" + filename, open(m[0]).read, {mode: 'wb'})
+    File.write(descriptor + "/" + filename, URI.open(m[0]).read, {mode: 'wb'})
     puts "  ##{download_count.to_s} of #{mp3.uniq.length.to_s}: #{filename} saved to #{descriptor} directory! (#{progress.round(2).to_s}%)"
     download_count += 1
   end
@@ -173,6 +173,13 @@ if options[:remixes]
   id = get_id(options[:remixes])
   desc_arr[4] = "remixes_of_" + id
   id = "&remixes=" + id
+end
+
+def escape_url(url)
+  if url.match(/%/)
+    url = CGI.unescape(url)
+  end
+  url.gsub(/(.)/) { |u| u.match(URI::UNSAFE) ? CGI.escape(u) : u }
 end
 
 descriptor = get_descriptor(desc_arr)
