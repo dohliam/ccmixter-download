@@ -44,7 +44,7 @@ def download_all_tracks(params, descriptor)
     filename = m[0].gsub(/.*\//, "")
     FileUtils.mkdir_p descriptor
     progress = download_count.to_f / mp3.uniq.length.to_f * 100
-    File.write(descriptor + "/" + filename, URI.open(m[0]).read, {mode: 'wb'})
+    File.write(descriptor + "/" + filename, URI.open(m[0], "Referer" => "http://ccmixter.org/").read, {mode: 'wb'})
     puts "  ##{download_count.to_s} of #{mp3.uniq.length.to_s}: #{filename} saved to #{descriptor} directory! (#{progress.round(2).to_s}%)"
     download_count += 1
   end
@@ -70,7 +70,7 @@ def stream_playlist(params, basename)
 
   tracklist_to_file(params, filename)
 
-  exec("mplayer -playlist #{filename}")
+  exec("mplayer -referrer http://ccmixter.org/ -playlist #{filename}")
 end
 
 def print_tracklist(params)
